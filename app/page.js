@@ -4,6 +4,7 @@ export default function Home() {
   return (
     <main>
       <h1>CPRG 306: Web Development 2 - Assignments</h1>
+  
       <Link href="/week-2">
         Week 2
       </Link>
@@ -20,6 +21,9 @@ export default function Home() {
            Week 5
       </Link>
       <br />
+      <Link href="/week-6">
+           Week 6
+      </Link>
       
       
     </main>
