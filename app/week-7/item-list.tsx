@@ -2,48 +2,43 @@
 
 import { useState } from "react";
 import Item from "./item";
+import { ItemType } from "../../utils/data"; // Import the ItemType from the utils
 
-interface ItemListProps {
-  items: {
-    id: number;
-    name: string;
-    quantity: number;
-    category: string;
-  }[];
-}
 
-export default function ItemList({ items }: ItemListProps) {
+type ItemListProps = {
+  items: ItemType[];
+  onItemSelect: (item: ItemType) => void;
+};
+type SortBy = "name" | "category" | "grouped";
+export default function ItemList({ items, onItemSelect }: ItemListProps) {
   const [sortBy, setSortBy] = useState("name");
 
-  // Create a copy of items for all operations to maintain immutability
-  const itemsCopy = [...items];
-
-  // Group items by category using a copy
-  const groupedItems = itemsCopy.reduce((acc, item) => {
-    const category = item.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push({ ...item }); // Create a copy of each item as well
-    return acc;
-  }, {} as Record<string, typeof items>);
-
-  // Sort categories alphabetically
-  const sortedCategories = Object.keys(groupedItems).sort();
-
-  // Sort items in each category (using copies)
-  sortedCategories.forEach(category => {
-    groupedItems[category].sort((a, b) => a.name.localeCompare(b.name));
-  });
-
-  // Sort items for name or category
-  const sortedItems = [...itemsCopy].sort((a, b) => {
+  // Sort items for name or category views
+  const sortedItems = [...items].sort((a, b) => {
     if (sortBy === "name") {
       return a.name.localeCompare(b.name);
     } else if (sortBy === "category") {
       return a.category.localeCompare(b.category);
     }
     return 0;
+  });
+
+  // Group items by category for grouped view
+  const groupedItems = items.reduce((acc, item) => {
+    const category = item.category;
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(item);
+    return acc;
+  }, {} as Record<string, ItemType[]>);
+
+  // Sort categories alphabetically
+  const sortedCategories = Object.keys(groupedItems).sort();
+
+  // Sort items in each category alphabetically
+  sortedCategories.forEach(category => {
+    groupedItems[category].sort((a, b) => a.name.localeCompare(b.name));
   });
 
   return (
@@ -96,6 +91,7 @@ export default function ItemList({ items }: ItemListProps) {
                     name={item.name}
                     quantity={item.quantity}
                     category={item.category}
+                    onSelect={() => onItemSelect(item)}
                   />
                 ))}
               </ul>
@@ -110,6 +106,7 @@ export default function ItemList({ items }: ItemListProps) {
               name={item.name}
               quantity={item.quantity}
               category={item.category}
+              onSelect={() => onItemSelect(item)}
             />
           ))}
         </ul>
