@@ -1,5 +1,5 @@
 "use client";
-
+export  const dynamic = "force-dynamic";
 import React from "react";
 import { useUserAuth } from "./_utils/auth-context";
 import Link from "next/link";

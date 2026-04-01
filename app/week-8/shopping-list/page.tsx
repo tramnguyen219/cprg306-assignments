@@ -1,31 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUserAuth } from "../_utils/auth-context";
 import itemsData from "./item.json"; 
 import NewItem from "./new-item";
 import ItemList from "./item-list";
-import MealIdeas from "./meal-ideas"; // 1. Import 
+import MealIdeas from "./meal-ideas";
 import { ItemType } from '@/utils/data'; // Import the ItemType from the types
 
-export default function Page() {
+export default function ShoppingListPage() {
   const [items, setItems] = useState<ItemType[]>(itemsData);
   const [selectedItemName, setSelectedItemName] = useState("");
+  
+  const { user } = useUserAuth();
+  const router = useRouter();
+
+  // if not logged in, redirect back to landing page
+  useEffect(() => {
+    if (user === null) {
+      router.push("/week-8");
+    }
+  }, [user, router]);
+
+  // don't render anything until we know the user is authenticated
+  if (user === null) {
+    return null;
+  }
 
   const handleAddItem = (newItem: ItemType) => {
     setItems((prev) => [...prev, newItem]);
+  };
 
-
-  }
-  // function handleAddItem(item: any) {
-  //   const newItem: ItemType = {
-  //     id: crypto.randomUUID(),
-  //     ...item,
-  //   };
-  //   setItems((prev) => [...prev, newItem]);
-  // }
-
-  // NEW: when user clicks an item in the list
-  function handleItemSelect(item: ItemType) {
+  // when user clicks an item in the list
+  const handleItemSelect = (item: ItemType) => {
     // Clean the item name for the API:
     // 1) take the part before the comma (removes " , 1 kg")
     // 2) trim spaces
@@ -41,12 +49,8 @@ export default function Page() {
       .toLowerCase();
 
     setSelectedItemName(cleaned);
-
-    console.log ("Selected item:", item.name, "Cleaned name for API:", cleaned);
-  }
-  
-
-
+    console.log("Selected item:", item.name, "Cleaned name for API:", cleaned);
+  };
 
   return (
     <main className="min-h-screen text-black bg-slate-200 flex items-center justify-center p-6">
@@ -55,7 +59,7 @@ export default function Page() {
           Shopping List
         </h1>
         <NewItem onAddItem={handleAddItem} />
-        <ItemList items={items} onItemSelect={(item) => handleItemSelect(item)} />
+        <ItemList items={items} onItemSelect={handleItemSelect} />
         <MealIdeas ingredient={selectedItemName} />
       </div>
     </main>
