@@ -49,7 +49,7 @@ export default function Home() {
 
             <div className="flex flex-col gap-3 mt-4">
               <Link
-                href="/week-8/shopping-list"
+                href="/week-10/shopping-list"
                 className="bg-green-600 text-white py-2 rounded-lg hover:bg-green-500 transition"
               >
                 Go to Shopping List
